@@ -20,15 +20,18 @@ class ServerSetting:
 
 
 def temporary_save():
+    # temporary save until I find a way to save on KeyboardInterupt
     PersistentUtility.save_data_to_file(
         filename='server_settings', data=server_settings)
     print(f'{PrintColor.OKBLUE}Saved data, change saving behavior later..{PrintColor.ENDC}')
 
 
 if __name__ == '__main__':
+    # load settings
     server_settings = PersistentUtility.load_data_from_file(
         filename='server_settings', on_empty=dict())
 
+    # init discord bot with intents
     intents = discord.Intents.default()
     intents.message_content = True
     client = commands.Bot(intents=intents, command_prefix='!')
@@ -38,23 +41,28 @@ if __name__ == '__main__':
         print(f'{client.user} has connected to Discord!')
         print('connected to the following guilds: {0}'.format(client.guilds))
 
+        # check if server settings exist for all joined guilds
         for guild in client.guilds:
             if guild.id not in server_settings:
                 server_settings[guild.id] = ServerSetting(guild.id)
 
+        # save server settings, in case new settings were added above
         PersistentUtility.save_data_to_file(
             filename='server_settings', data=server_settings)
 
     @client.event
     async def on_message(message):
+        # ignore message from itself
         if message.author.id == client.user.id:
             return
 
+        # ai / gpt talk
         if not message.content.startswith(client.command_prefix) and message.channel.id in server_settings[message.guild.id].ai_channels:
             response = ai.response_from_text(
                 message.content, conversation_id=message.channel.id)  # possible synchroneous blocking call? idk how discord handle this
             await message.channel.send(response)
 
+        # process command
         await client.process_commands(message)
         await message.add_reaction('✅')
 
@@ -63,6 +71,7 @@ if __name__ == '__main__':
         args = args.replace('@', '')
         await ctx.send(args)
 
+    # join a voice channel the user is in
     @client.command()
     async def join(ctx):
         channel = ctx.author.voice.channel
@@ -71,16 +80,9 @@ if __name__ == '__main__':
             return
         await channel.connect()
 
+    # play youtube audio
     @client.command()
     async def play(ctx, link=None):
-        if (link == 'force'):
-            channel = ctx.author.voice.channel
-            vc = get(client.voice_clients, guild=ctx.guild)
-            audio = discord.FFmpegPCMAudio(
-                executable=FFMPEG, source='ydl_output')
-            vc.play(audio)
-            return
-
         channel = ctx.author.voice.channel
         if channel == None:
             await ctx.send('You are not in a voice channel')
@@ -133,11 +135,14 @@ if __name__ == '__main__':
         temporary_save()
 
     async def check_valid_ai_text_channel(ctx, channel_id):
+        # no channel id provided, use current channel
         if channel_id == None:
             channel_id = ctx.channel.id
+        # channel mentioned, get raw id
         elif channel_id.startswith('<#'):
             channel_id = channel_id[2:-1]
 
+        # convert to text channel
         try:
             channel = await commands.TextChannelConverter().convert(ctx, str(channel_id))
         except commands.ChannelNotFound:
