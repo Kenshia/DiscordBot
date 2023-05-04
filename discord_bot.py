@@ -1,7 +1,7 @@
 import os
 import discord
 from discord.utils import get
-from discord.ext import commands
+from discord.ext import commands, voice_recv
 from dotenv import load_dotenv
 import youtube_dl
 import ai_module as ai
@@ -154,6 +154,18 @@ if __name__ == '__main__':
             await ctx.send('Channel is in a different server')
 
         return channel
+
+    @client.command()
+    async def test(ctx):
+        def callback(member, packet):
+            print(member, packet)
+        vc = await ctx.author.voice.channel.connect(cls=voice_recv.VoiceRecvClient)
+        vc.listen(voice_recv.BasicSink(callback))
+
+    @client.command()
+    async def stop(ctx):
+        ctx.voice_client.stop_listening()
+        await ctx.voice_client.disconnect()
 
     @discord.app_commands.context_menu()
     async def react(interaction: discord.Interaction, message: discord.Message):
