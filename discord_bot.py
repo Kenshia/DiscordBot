@@ -19,13 +19,6 @@ class ServerSetting:
         self.queue = []
 
 
-def temporary_save():
-    # temporary save until I find a way to save on KeyboardInterupt
-    PersistentUtility.save_data_to_file(
-        filename='server_settings', data=server_settings)
-    print(f'{PrintColor.OKBLUE}Saved data, change saving behavior later..{PrintColor.ENDC}')
-
-
 if __name__ == '__main__':
     # load settings
     server_settings = PersistentUtility.load_data_from_file(
@@ -119,7 +112,6 @@ if __name__ == '__main__':
 
         server_settings[ctx.guild.id].ai_channels.append(channel.id)
         await ctx.send(f'<#{channel.id}> added')
-        temporary_save()
 
     @client.command()
     async def remove_ai_channel(ctx, channel_id=None):
@@ -132,7 +124,6 @@ if __name__ == '__main__':
 
         server_settings[ctx.guild.id].ai_channels.remove(channel.id)
         await ctx.send(f'<#{channel.id}> removed')
-        temporary_save()
 
     async def check_valid_ai_text_channel(ctx, channel_id):
         # no channel id provided, use current channel
@@ -154,6 +145,16 @@ if __name__ == '__main__':
             await ctx.send('Channel is in a different server')
 
         return channel
+
+    @client.command()
+    async def die(ctx):
+        # save server settings
+        PersistentUtility.save_data_to_file(
+            filename='server_settings', data=server_settings)
+        print(
+            f'{PrintColor.OKBLUE}Saved data{PrintColor.ENDC}')
+
+        await ctx.bot.close()
 
     @client.command()
     async def test(ctx):
