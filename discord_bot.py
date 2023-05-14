@@ -119,12 +119,15 @@ if __name__ == '__main__':
              #  'postprocessors': [{'key': 'FFmpegExtractAudio', 'preferredcodec': 'mp3', 'preferredquality': '192'}]
              })
 
-        await asyncio.get_event_loop().run_in_executor(None, ydl.download, [link])
-        # ydl.download([link])
+        if os.exists(f'Data/Youtube/{filename}'):
+            await ctx.send('exist in local storage')
+        else:
+            await ctx.send(f'{filename} downloading')
+            await asyncio.get_event_loop().run_in_executor(None, ydl.download, [link])
+            await ctx.send(f'{filename} downloaded')
+
         audio = discord.FFmpegPCMAudio(
             executable=FFMPEG_PATH, source=f'Data/Youtube/{filename}')
-
-        await ctx.send('finished downloading')
 
         server_settings[ctx.guild.id].play_queue.append((audio, filename))
 
@@ -137,6 +140,7 @@ if __name__ == '__main__':
             while vc.is_playing():
                 await asyncio.sleep(1)
 
+        server_settings[ctx.guild.id].playing = None
         await vc.disconnect()
 
     @client.command()
@@ -263,6 +267,8 @@ if __name__ == '__main__':
     async def stop(ctx):
         vc: discord.voice_client = get(client.voice_clients, guild=ctx.guild)
         await vc.disconnect()
+
+        server_settings[ctx.guild.id].playing = None
 
         if server_settings[ctx.guild.id].talk_channel is not None:
             ai.memory.remove_history(
