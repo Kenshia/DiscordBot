@@ -4,7 +4,7 @@
 1. Clone the repository
 2. copy .env.example to .env
 3. fill in the .env file
-4. run 'python discord_bot.py'
+4. run 'python main.py'
 ```
 ## Run through docker
 ```

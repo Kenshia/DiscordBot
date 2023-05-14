@@ -3,4 +3,4 @@ WORKDIR /app
 COPY ai_memory.py ai_module.py discord_bot.py utility.py requirements.txt .env LICENSE /app/
 RUN pip install --trusted-host pypi.python.org -r requirements.txt
 RUN apt-get update && apt-get install -y espeak ffmpeg
-CMD ["python", "discord_bot.py"]
+CMD ["python", "main.py"]
