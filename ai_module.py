@@ -17,7 +17,10 @@ memory = AiMemory()
 
 
 def get_voice_from_text(command) -> bytes:
-    _name = time.time()
+    _name = str(int(time.time() * 1000))
+    cwd = os.getcwd()
+    _name = os.path.join(cwd, _name)
+
     _engine = pyttsx3.init()
     _engine.save_to_file(command, f'{_name}.wav')
     _engine.runAndWait()
@@ -43,7 +46,6 @@ def __fix_data(input_file):
     if len(data.shape) == 1:
         data = np.column_stack((data, data))
 
-    os.remove(input_file)
     sf.write(input_file, data, samplerate=44100, subtype='PCM_16')
 
 
