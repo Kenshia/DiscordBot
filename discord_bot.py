@@ -106,6 +106,9 @@ if __name__ == '__main__':
             return
 
         filename = link.split('/')[-1]
+        if filename.startswith('watch?'):
+            filename = filename[8:]
+            filename = filename[:filename.index('&')]
 
         vc = get(client.voice_clients, guild=ctx.guild)
         if vc is None:
@@ -118,7 +121,7 @@ if __name__ == '__main__':
              })
 
         if os.path.exists(f'Data/Youtube/{filename}'):
-            await ctx.send('exist in local storage')
+            await ctx.send(f'{filename} in storage')
         else:
             await ctx.send(f'{filename} downloading')
             await asyncio.get_event_loop().run_in_executor(None, ydl.download, [link])
@@ -135,6 +138,7 @@ if __name__ == '__main__':
             audio, filename = server_settings[ctx.guild.id].play_queue.pop(0)
             server_settings[ctx.guild.id].playing = filename
             vc.play(audio)
+            await ctx.send(f'playing: {filename}')
             while vc.is_playing():
                 await asyncio.sleep(1)
 
@@ -216,6 +220,7 @@ if __name__ == '__main__':
 
         for guild_id in server_settings:
             server_settings[guild_id].talk_channel = None
+            server_settings[guild_id].playing = None
 
         # save server settings
         PersistentUtility.save_data_to_file(
