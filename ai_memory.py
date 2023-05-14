@@ -2,7 +2,7 @@ from utility import StringUtility, PrintColor
 
 
 class AiMemory:
-    MAX_HISTORY_LENGTH = 3000
+    MAX_HISTORY_LENGTH = 2000
 
     def __init__(self):
         # could've just use string and split by \n but will break if \n is in the text
@@ -26,7 +26,7 @@ class AiMemory:
                     self.history[conversation_id].pop(i)
 
         print(
-            f'{PrintColor.OKBLUE}history: {self.history[conversation_id]}{PrintColor.ENDC}')
+            f'{PrintColor.OKBLUE}{conversation_id}: {self.history[conversation_id]}{PrintColor.ENDC}')
         return '\n'.join(self.history[conversation_id])
 
     def remove_history(self, conversation_id):
