@@ -5,7 +5,7 @@ from discord.ext import commands
 # from discord.ext import voice_recv
 from dotenv import load_dotenv
 import asyncio
-import youtube_dl
+import yt_dlp
 import ai_module as ai
 from utility import PersistentUtility, PrintColor
 
@@ -115,7 +115,7 @@ if __name__ == '__main__':
             await channel.connect()
             vc = get(client.voice_clients, guild=ctx.guild)
 
-        ydl = youtube_dl.YoutubeDL(
+        ydl = yt_dlp.YoutubeDL(
             {'format': 'bestaudio', 'noplaylist': 'True', 'outtmpl': f'Data/Youtube/{filename}',
              #  'postprocessors': [{'key': 'FFmpegExtractAudio', 'preferredcodec': 'mp3', 'preferredquality': '192'}]
              })
