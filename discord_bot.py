@@ -11,7 +11,6 @@ from utility import PersistentUtility, PrintColor
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
-# youtube dl requires ffmpeg, use youtube_dl at your own risk
 FFMPEG_PATH = os.getenv('FFMPEG_PATH')
 
 
