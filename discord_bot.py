@@ -112,14 +112,12 @@ if __name__ == '__main__':
             await channel.connect()
             vc = get(client.voice_clients, guild=ctx.guild)
 
-        await ctx.send('downloading')
-
         ydl = youtube_dl.YoutubeDL(
             {'format': 'bestaudio', 'noplaylist': 'True', 'outtmpl': f'Data/Youtube/{filename}',
              #  'postprocessors': [{'key': 'FFmpegExtractAudio', 'preferredcodec': 'mp3', 'preferredquality': '192'}]
              })
 
-        if os.exists(f'Data/Youtube/{filename}'):
+        if os.path.exists(f'Data/Youtube/{filename}'):
             await ctx.send('exist in local storage')
         else:
             await ctx.send(f'{filename} downloading')
