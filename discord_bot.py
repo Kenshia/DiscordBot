@@ -12,6 +12,8 @@ from utility import PersistentUtility, PrintColor
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 FFMPEG_PATH = os.getenv('FFMPEG_PATH')
+if FFMPEG_PATH is None:
+    FFMPEG_PATH = 'ffmpeg'
 
 
 class ServerSetting:
@@ -24,6 +26,11 @@ class ServerSetting:
 
 
 if __name__ == '__main__':
+    if not os.path.exists('Data'):
+        os.mkdir('Data')
+    if not os.path.exists('Data/Youtube'):
+        os.mkdir('Data/Youtube')
+
     ACTIVE = False
 
     # load settings
