@@ -78,7 +78,7 @@ if __name__ == '__main__':
                 response = ai.response_from_text(
                     message.content, conversation_id=message.channel.id)
                 await message.channel.send(response)
-                voice_data = ai.get_voice_from_text(response)
+                voice_data = await ai.get_voice_from_text(response)
 
                 # send voice data to voice channel
                 vc = get(client.voice_clients, guild=message.guild)

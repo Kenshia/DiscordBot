@@ -3,6 +3,7 @@ import speech_recognition as sr
 import pyttsx3
 import os
 import time
+import asyncio
 import wave
 import requests
 import soundfile as sf
@@ -16,26 +17,30 @@ recognizer = sr.Recognizer()
 memory = AiMemory()
 
 
-def get_voice_from_text(command) -> bytes:
+async def get_voice_from_text(command) -> bytes:
     _name = str(int(time.time() * 1000))
     cwd = os.getcwd()
-    _name = os.path.join(cwd, _name)
+    _name = os.path.join(cwd, _name) + '.wav'
 
     _engine = pyttsx3.init()
-    _engine.save_to_file(command, f'{_name}.wav')
+    _engine.save_to_file(command, _name)
     _engine.runAndWait()
 
-    __fix_data(f'{_name}.wav')
+    while not os.path.exists(_name):
+        await asyncio.sleep(0.1)
+
+    __fix_data(_name)
     result = None
 
-    with wave.open(f'{_name}.wav', 'rb') as file:
+    with wave.open(_name, 'rb') as file:
         result = file.readframes(-1)
 
-    os.remove(f'{_name}.wav')
+    os.remove(_name)
     return result
 
 
 def __fix_data(input_file):
+    print(f'{input_file}: {os.path.exists(input_file)}')
     # load the input file
     data, samplerate = sf.read(input_file)
 
